@@ -1,0 +1,2130 @@
+-- DHAO HUB ULTRA PART 1
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
+
+local LocalPlayer = Players.LocalPlayer
+
+-- GUI
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "DHAO_HUB"
+ScreenGui.Parent = game.CoreGui
+ScreenGui.IgnoreGuiInset = true
+
+-- INTRO
+
+local Intro = Instance.new("Frame")
+Intro.Size = UDim2.new(1,0,1,0)
+Intro.BackgroundColor3 = Color3.fromRGB(0,0,0)
+Intro.Parent = ScreenGui
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(0,400,0,120)
+Title.Position = UDim2.new(0.5,-200,0.5,-60)
+Title.BackgroundTransparency = 1
+Title.Text = "DHAO HUB"
+Title.TextColor3 = Color3.fromRGB(255,0,0)
+Title.Font = Enum.Font.SciFi
+Title.TextScaled = true
+Title.Parent = Intro
+
+Title.TextStrokeTransparency = 0
+Title.TextStrokeColor3 = Color3.new(0,0,0)
+
+TweenService:Create(
+Title,
+TweenInfo.new(1,Enum.EasingStyle.Back),
+{Rotation = 360}
+):Play()
+
+task.wait(1.5)
+
+TweenService:Create(
+Intro,
+TweenInfo.new(0.6),
+{BackgroundTransparency = 1}
+):Play()
+
+task.wait(0.6)
+
+Intro:Destroy()
+
+-- MAIN MENU
+
+local Main = Instance.new("Frame")
+Main.Size = UDim2.new(0,540,0,350)
+Main.Position = UDim2.new(0.5,-270,0.5,-175)
+Main.BackgroundColor3 = Color3.fromRGB(0,0,0)
+Main.BackgroundTransparency = 0.2
+Main.Parent = ScreenGui
+Main.Active = true
+Main.Draggable = false
+
+Instance.new("UICorner",Main).CornerRadius = UDim.new(0,10)
+
+-- GLOW
+
+local Stroke = Instance.new("UIStroke")
+Stroke.Color = Color3.fromRGB(255,0,0)
+Stroke.Thickness = 2
+Stroke.Parent = Main
+
+task.spawn(function()
+
+while true do
+
+TweenService:Create(
+Stroke,
+TweenInfo.new(1),
+{Transparency = 0.4}
+):Play()
+
+task.wait(1)
+
+TweenService:Create(
+Stroke,
+TweenInfo.new(1),
+{Transparency = 0}
+):Play()
+
+task.wait(1)
+
+end
+
+end)
+
+-- TITLE BAR
+
+local Top = Instance.new("Frame")
+Top.Size = UDim2.new(1,0,0,40)
+Top.BackgroundTransparency = 1
+Top.Parent = Main
+
+local HubTitle = Instance.new("TextLabel")
+HubTitle.Size = UDim2.new(1,0,1,0)
+HubTitle.BackgroundTransparency = 1
+HubTitle.Text = "DHAO HUB ULTRA"
+HubTitle.TextColor3 = Color3.fromRGB(255,0,0)
+HubTitle.Font = Enum.Font.SciFi
+HubTitle.TextScaled = true
+HubTitle.Parent = Top
+
+-- CLOSE BUTTON
+
+local Close = Instance.new("TextButton")
+Close.Size = UDim2.new(0,40,0,40)
+Close.Position = UDim2.new(1,-40,0,0)
+Close.Text = "X"
+Close.BackgroundTransparency = 1
+Close.TextColor3 = Color3.new(1,1,1)
+Close.Parent = Top
+
+Close.MouseButton1Click:Connect(function()
+
+ScreenGui:Destroy()
+
+end)
+
+-- DRAG SYSTEM
+
+local dragging = false
+local dragInput
+local dragStart
+local startPos
+
+Top.InputBegan:Connect(function(input)
+
+if input.UserInputType == Enum.UserInputType.MouseButton1 then
+
+dragging = true
+dragStart = input.Position
+startPos = Main.Position
+
+end
+
+end)
+
+Top.InputEnded:Connect(function(input)
+
+if input.UserInputType == Enum.UserInputType.MouseButton1 then
+
+dragging = false
+
+end
+
+end)
+
+UIS.InputChanged:Connect(function(input)
+
+if dragging then
+
+local delta = input.Position - dragStart
+
+Main.Position = UDim2.new(
+startPos.X.Scale,
+startPos.X.Offset + delta.X,
+startPos.Y.Scale,
+startPos.Y.Offset + delta.Y
+)
+
+end
+
+end)
+
+-- CONTENT HOLDER
+
+local TabMenu = Instance.new("Frame")
+TabMenu.Size = UDim2.new(0,160,1,-40)
+TabMenu.Position = UDim2.new(0,0,0,40)
+TabMenu.BackgroundColor3 = Color3.fromRGB(0,0,0)
+TabMenu.BackgroundTransparency = 0.3
+TabMenu.Parent = Main
+
+Instance.new("UICorner",TabMenu)
+
+local Content = Instance.new("Frame")
+Content.Size = UDim2.new(1,-160,1,-40)
+Content.Position = UDim2.new(0,160,0,40)
+Content.BackgroundTransparency = 1
+Content.Parent = Main
+
+-- FPS COUNTER
+
+local FPS = Instance.new("TextLabel")
+FPS.Size = UDim2.new(0,120,0,25)
+FPS.Position = UDim2.new(1,-130,0,5)
+FPS.BackgroundTransparency = 1
+FPS.TextColor3 = Color3.fromRGB(255,0,0)
+FPS.Font = Enum.Font.Code
+FPS.TextScaled = true
+FPS.Text = "FPS : 0"
+FPS.Parent = Main
+
+local last = tick()
+local frames = 0
+
+RunService.RenderStepped:Connect(function()
+
+frames += 1
+
+if tick() - last >= 1 then
+
+FPS.Text = "FPS : "..frames
+
+frames = 0
+last = tick()
+
+end
+
+end)
+
+-- OPEN ANIMATION
+
+Main.Size = UDim2.new(0,0,0,0)
+
+TweenService:Create(
+Main,
+TweenInfo.new(
+0.5,
+Enum.EasingStyle.Back,
+Enum.EasingDirection.Out
+),
+{Size = UDim2.new(0,540,0,350)}
+):Play()
+-- DHAO HUB ULTRA PART 2
+
+-- CREATE TAB FUNCTION
+
+local function CreateTab(name,pos)
+
+local Btn = Instance.new("TextButton")
+Btn.Size = UDim2.new(1,-10,0,40)
+Btn.Position = UDim2.new(0,5,0,pos)
+Btn.Text = name
+Btn.TextColor3 = Color3.new(1,1,1)
+Btn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+Btn.BackgroundTransparency = 0.3
+Btn.Parent = TabMenu
+
+Instance.new("UICorner",Btn)
+
+return Btn
+
+end
+
+
+-- TAB BUTTONS
+
+local HomeBtn = CreateTab("Home",10)
+local ScriptBtn = CreateTab("Scripts",55)
+local FixBtn = CreateTab("FixLag",100)
+local ExecBtn = CreateTab("Execute",145)
+local SettingBtn = CreateTab("Settings",190)
+local PlayerBtn = CreateTab("Player",235)
+
+
+
+-- CREATE PAGE FUNCTION
+
+local function CreatePage()
+
+local Page = Instance.new("Frame")
+Page.Size = UDim2.new(1,0,1,0)
+Page.BackgroundTransparency = 1
+Page.Visible = false
+Page.Parent = Content
+
+return Page
+
+end
+
+
+
+-- PAGES
+
+local HomePage = CreatePage()
+local ScriptPage = CreatePage()
+local FixLagPage = CreatePage()
+local ExecutePage = CreatePage()
+local SettingPage = CreatePage()
+local PlayerPage = CreatePage()
+
+
+HomePage.Visible = true
+
+
+
+-- HOME PAGE UI
+
+local Avatar = Instance.new("ImageLabel")
+Avatar.Size = UDim2.new(0,90,0,90)
+Avatar.Position = UDim2.new(0,20,0,20)
+Avatar.BackgroundTransparency = 1
+Avatar.Image =
+"https://www.roblox.com/headshot-thumbnail/image?userId="..
+game.Players.LocalPlayer.UserId..
+"&width=420&height=420&format=png"
+Avatar.Parent = HomePage
+
+
+local PlayerName = Instance.new("TextLabel")
+PlayerName.Size = UDim2.new(1,-120,0,40)
+PlayerName.Position = UDim2.new(0,120,0,30)
+PlayerName.BackgroundTransparency = 1
+PlayerName.Text = "Player : "..game.Players.LocalPlayer.Name
+PlayerName.TextColor3 = Color3.new(1,1,1)
+PlayerName.Font = Enum.Font.Code
+PlayerName.TextScaled = true
+PlayerName.TextXAlignment = Enum.TextXAlignment.Left
+PlayerName.Parent = HomePage
+
+
+local Welcome = Instance.new("TextLabel")
+Welcome.Size = UDim2.new(1,-120,0,40)
+Welcome.Position = UDim2.new(0,120,0,70)
+Welcome.BackgroundTransparency = 1
+Welcome.Text = "Welcome to DHAO HUB ULTRA"
+Welcome.TextColor3 = Color3.fromRGB(255,0,0)
+Welcome.Font = Enum.Font.SciFi
+Welcome.TextScaled = true
+Welcome.TextXAlignment = Enum.TextXAlignment.Left
+Welcome.Parent = HomePage
+
+
+
+-- INFO PANEL
+
+local InfoFrame = Instance.new("Frame")
+InfoFrame.Size = UDim2.new(1,-40,0,120)
+InfoFrame.Position = UDim2.new(0,20,0,140)
+InfoFrame.BackgroundColor3 = Color3.fromRGB(0,0,0)
+InfoFrame.BackgroundTransparency = 0.3
+InfoFrame.Parent = HomePage
+
+Instance.new("UICorner",InfoFrame)
+
+
+local InfoText = Instance.new("TextLabel")
+InfoText.Size = UDim2.new(1,-20,1,-20)
+InfoText.Position = UDim2.new(0,10,0,10)
+InfoText.BackgroundTransparency = 1
+InfoText.TextColor3 = Color3.new(1,1,1)
+InfoText.Font = Enum.Font.Code
+InfoText.TextScaled = true
+InfoText.TextWrapped = true
+InfoText.Text =
+"DHAO HUB ULTRA\n"..
+"Powerful Script Hub\n"..
+"Includes Player Tools, Execute, FixLag, ESP, Scripts"
+InfoText.Parent = InfoFrame
+
+
+
+-- TAB SWITCH SYSTEM
+
+HomeBtn.MouseButton1Click:Connect(function()
+
+HomePage.Visible = true
+ScriptPage.Visible = false
+FixLagPage.Visible = false
+ExecutePage.Visible = false
+SettingPage.Visible = false
+PlayerPage.Visible = false
+
+end)
+
+
+ScriptBtn.MouseButton1Click:Connect(function()
+
+HomePage.Visible = false
+ScriptPage.Visible = true
+FixLagPage.Visible = false
+ExecutePage.Visible = false
+SettingPage.Visible = false
+PlayerPage.Visible = false
+
+end)
+
+
+FixBtn.MouseButton1Click:Connect(function()
+
+HomePage.Visible = false
+ScriptPage.Visible = false
+FixLagPage.Visible = true
+ExecutePage.Visible = false
+SettingPage.Visible = false
+PlayerPage.Visible = false
+
+end)
+
+
+ExecBtn.MouseButton1Click:Connect(function()
+
+HomePage.Visible = false
+ScriptPage.Visible = false
+FixLagPage.Visible = false
+ExecutePage.Visible = true
+SettingPage.Visible = false
+PlayerPage.Visible = false
+
+end)
+
+
+SettingBtn.MouseButton1Click:Connect(function()
+
+HomePage.Visible = false
+ScriptPage.Visible = false
+FixLagPage.Visible = false
+ExecutePage.Visible = false
+SettingPage.Visible = true
+PlayerPage.Visible = false
+
+end)
+
+
+PlayerBtn.MouseButton1Click:Connect(function()
+
+HomePage.Visible = false
+ScriptPage.Visible = false
+FixLagPage.Visible = false
+ExecutePage.Visible = false
+SettingPage.Visible = false
+PlayerPage.Visible = true
+
+end)
+-- DHAO HUB ULTRA PART 3
+
+-- SCRIPT SCROLL
+
+local ScriptList = Instance.new("ScrollingFrame")
+ScriptList.Size = UDim2.new(1,-10,1,-50)
+ScriptList.Position = UDim2.new(0,5,0,45)
+ScriptList.BackgroundTransparency = 1
+ScriptList.ScrollBarThickness = 8
+ScriptList.ScrollBarImageColor3 = Color3.fromRGB(255,0,0)
+ScriptList.AutomaticCanvasSize = Enum.AutomaticSize.Y
+ScriptList.Parent = ScriptPage
+
+local ScriptLayout = Instance.new("UIListLayout")
+ScriptLayout.Parent = ScriptList
+ScriptLayout.Padding = UDim.new(0,6)
+
+-- SEARCH BAR
+
+local Search = Instance.new("TextBox")
+Search.Size = UDim2.new(1,-10,0,35)
+Search.Position = UDim2.new(0,5,0,5)
+Search.PlaceholderText = "Search Script..."
+Search.Text = ""
+Search.TextColor3 = Color3.new(1,1,1)
+Search.BackgroundColor3 = Color3.fromRGB(0,0,0)
+Search.BackgroundTransparency = 0.3
+Search.Parent = ScriptPage
+
+Instance.new("UICorner",Search)
+
+-- SCRIPT BUTTON FUNCTION
+
+local function AddScript(name,func)
+
+local Btn = Instance.new("TextButton")
+Btn.Size = UDim2.new(1,-5,0,40)
+Btn.Text = name
+Btn.TextColor3 = Color3.new(1,1,1)
+Btn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+Btn.BackgroundTransparency = 0.3
+Btn.Parent = ScriptList
+
+Instance.new("UICorner",Btn)
+
+Btn.MouseButton1Click:Connect(func)
+
+end
+
+
+-- SCRIPT SEARCH
+
+Search:GetPropertyChangedSignal("Text"):Connect(function()
+
+for _,v in pairs(ScriptList:GetChildren()) do
+
+if v:IsA("TextButton") then
+
+if string.find(
+string.lower(v.Text),
+string.lower(Search.Text)
+) then
+
+v.Visible = true
+
+else
+
+v.Visible = false
+
+end
+
+end
+
+end
+
+end)
+
+
+
+-- SCRIPTS
+
+AddScript("Infinite Yield",function()
+
+loadstring(game:HttpGet(
+"https://raw.githubusercontent.com/MerebennieOfficial/ExoticJn/refs/heads/main/Kibav4"
+))()
+
+end)
+
+
+AddScript("Dark Dex",function()
+
+loadstring(game:HttpGet(
+"https://raw.githubusercontent.com/peyton2465/Dex/master/out.lua"
+))()
+
+end)
+
+
+AddScript("Remote Spy",function()
+
+loadstring(game:HttpGet(
+"https://raw.githubusercontent.com/exxtremestuffs/SimpleSpySource/master/SimpleSpy.lua"
+))()
+
+end)
+
+
+AddScript("Simple Spy V3",function()
+
+loadstring(game:HttpGet(
+"https://raw.githubusercontent.com/78n/SimpleSpy/main/SimpleSpyBeta.lua"
+))()
+
+end)
+
+
+AddScript("CMD-X Admin",function()
+
+loadstring(game:HttpGet(
+"https://raw.githubusercontent.com/CMD-X/CMD-X/master/Source"
+))()
+
+end)
+
+
+AddScript("Hydroxide",function()
+
+loadstring(game:HttpGet(
+"https://raw.githubusercontent.com/Upbolt/Hydroxide/revision/init.lua"
+))()
+
+end)
+
+
+AddScript("Unnamed ESP",function()
+
+loadstring(game:HttpGet(
+"https://raw.githubusercontent.com/ic3w0lf22/Unnamed-ESP/master/source.lua"
+))()
+
+end)
+
+
+AddScript("Fly Script",function()
+
+loadstring(game:HttpGet(
+"https://pastebin.com/raw/7tR8iA9v"
+))()
+
+end)
+
+
+AddScript("TP Tool",function()
+
+loadstring(game:HttpGet(
+"https://pastebin.com/raw/VGZ7aR7s"
+))()
+
+end)
+
+
+AddScript("Animation GUI",function()
+
+loadstring(game:HttpGet(
+"https://pastebin.com/raw/1p6rK3xN"
+))()
+
+end)
+
+
+AddScript("BTools",function()
+
+loadstring(game:HttpGet(
+"https://pastebin.com/raw/5F8q0QFv"
+))()
+
+end)
+
+
+AddScript("Chat Spy",function()
+
+loadstring(game:HttpGet(
+"https://pastebin.com/raw/9sZ9G2Yx"
+))()
+
+end)
+-- DHAO HUB ULTRA PART 4
+
+-- FIXLAG SCROLL
+
+local FixList = Instance.new("ScrollingFrame")
+FixList.Size = UDim2.new(1,-10,1,-10)
+FixList.Position = UDim2.new(0,5,0,5)
+FixList.BackgroundTransparency = 1
+FixList.ScrollBarThickness = 8
+FixList.ScrollBarImageColor3 = Color3.fromRGB(255,0,0)
+FixList.AutomaticCanvasSize = Enum.AutomaticSize.Y
+FixList.Parent = FixLagPage
+
+local FixLayout = Instance.new("UIListLayout")
+FixLayout.Parent = FixList
+FixLayout.Padding = UDim.new(0,6)
+
+-- ADD FIX BUTTON
+
+local function AddFix(name,func)
+
+local Btn = Instance.new("TextButton")
+Btn.Size = UDim2.new(1,-5,0,40)
+Btn.Text = name
+Btn.TextColor3 = Color3.new(1,1,1)
+Btn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+Btn.BackgroundTransparency = 0.3
+Btn.Parent = FixList
+
+Instance.new("UICorner",Btn)
+
+Btn.MouseButton1Click:Connect(func)
+
+end
+
+
+-- FPS BOOST
+
+AddFix("FPS Boost",function()
+
+for _,v in pairs(workspace:GetDescendants()) do
+
+if v:IsA("BasePart") then
+v.Material = Enum.Material.SmoothPlastic
+v.Reflectance = 0
+end
+
+end
+
+end)
+
+
+-- REMOVE TEXTURES
+
+AddFix("Remove Textures",function()
+
+for _,v in pairs(workspace:GetDescendants()) do
+
+if v:IsA("Decal") then
+v:Destroy()
+end
+
+if v:IsA("Texture") then
+v:Destroy()
+end
+
+end
+
+end)
+
+
+-- DISABLE PARTICLES
+
+AddFix("Disable Particles",function()
+
+for _,v in pairs(workspace:GetDescendants()) do
+
+if v:IsA("ParticleEmitter") then
+v.Enabled = false
+end
+
+if v:IsA("Trail") then
+v.Enabled = false
+end
+
+end
+
+end)
+
+
+-- REMOVE SHADOW
+
+AddFix("Disable Shadow",function()
+
+game:GetService("Lighting").GlobalShadows = false
+
+end)
+
+
+-- LOW GRAPHICS
+
+AddFix("Low Graphics Mode",function()
+
+settings().Rendering.QualityLevel = "Level01"
+
+end)
+
+
+-- REMOVE SKY
+
+AddFix("Remove Sky",function()
+
+for _,v in pairs(game:GetService("Lighting"):GetChildren()) do
+
+if v:IsA("Sky") then
+v:Destroy()
+end
+
+end
+
+end)
+
+
+-- CLEAR MAP TRASH
+
+AddFix("Map Cleaner",function()
+
+for _,v in pairs(workspace:GetDescendants()) do
+
+if v:IsA("Explosion") then
+v:Destroy()
+end
+
+if v:IsA("Fire") then
+v:Destroy()
+end
+
+if v:IsA("Smoke") then
+v:Destroy()
+end
+
+end
+
+end)
+
+
+-- AUTO OPTIMIZER
+
+AddFix("Auto FPS Optimizer",function()
+
+task.spawn(function()
+
+while true do
+
+task.wait(30)
+
+for _,v in pairs(workspace:GetDescendants()) do
+
+if v:IsA("ParticleEmitter") then
+v.Enabled = false
+end
+
+if v:IsA("Trail") then
+v.Enabled = false
+end
+
+end
+
+end
+
+end)
+
+end)
+
+
+-- LIGHTING OPTIMIZER
+
+AddFix("Lighting Optimizer",function()
+
+local L = game:GetService("Lighting")
+
+L.Brightness = 1
+L.FogEnd = 100000
+L.GlobalShadows = false
+L.OutdoorAmbient = Color3.fromRGB(128,128,128)
+
+end)
+-- DHAO HUB ULTRA PART 5
+
+-- SCRIPT BOX
+
+local ScriptBox = Instance.new("TextBox")
+ScriptBox.Size = UDim2.new(1,-20,0,160)
+ScriptBox.Position = UDim2.new(0,10,0,10)
+ScriptBox.BackgroundColor3 = Color3.fromRGB(0,0,0)
+ScriptBox.BackgroundTransparency = 0.3
+ScriptBox.TextColor3 = Color3.new(1,1,1)
+ScriptBox.MultiLine = true
+ScriptBox.ClearTextOnFocus = false
+ScriptBox.TextXAlignment = Enum.TextXAlignment.Left
+ScriptBox.TextYAlignment = Enum.TextYAlignment.Top
+ScriptBox.Text = ""
+ScriptBox.PlaceholderText = "Paste script here..."
+ScriptBox.Parent = ExecutePage
+
+Instance.new("UICorner",ScriptBox)
+
+-- RUN BUTTON
+
+local RunBtn = Instance.new("TextButton")
+RunBtn.Size = UDim2.new(0.3,0,0,40)
+RunBtn.Position = UDim2.new(0.05,0,0,180)
+RunBtn.Text = "Run Script"
+RunBtn.TextColor3 = Color3.new(1,1,1)
+RunBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+RunBtn.BackgroundTransparency = 0.3
+RunBtn.Parent = ExecutePage
+
+Instance.new("UICorner",RunBtn)
+
+RunBtn.MouseButton1Click:Connect(function()
+
+local scriptCode = ScriptBox.Text
+
+if scriptCode ~= "" then
+
+local f = loadstring(scriptCode)
+
+if f then
+pcall(f)
+end
+
+end
+
+end)
+
+-- CLEAR BUTTON
+
+local ClearBtn = Instance.new("TextButton")
+ClearBtn.Size = UDim2.new(0.3,0,0,40)
+ClearBtn.Position = UDim2.new(0.37,0,0,180)
+ClearBtn.Text = "Clear"
+ClearBtn.TextColor3 = Color3.new(1,1,1)
+ClearBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+ClearBtn.BackgroundTransparency = 0.3
+ClearBtn.Parent = ExecutePage
+
+Instance.new("UICorner",ClearBtn)
+
+ClearBtn.MouseButton1Click:Connect(function()
+
+ScriptBox.Text = ""
+
+end)
+
+-- COPY BUTTON
+
+local CopyBtn = Instance.new("TextButton")
+CopyBtn.Size = UDim2.new(0.3,0,0,40)
+CopyBtn.Position = UDim2.new(0.69,0,0,180)
+CopyBtn.Text = "Copy"
+CopyBtn.TextColor3 = Color3.new(1,1,1)
+CopyBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+CopyBtn.BackgroundTransparency = 0.3
+CopyBtn.Parent = ExecutePage
+
+Instance.new("UICorner",CopyBtn)
+
+CopyBtn.MouseButton1Click:Connect(function()
+
+if setclipboard then
+setclipboard(ScriptBox.Text)
+end
+
+end)
+
+-- PASTE BUTTON
+
+local PasteBtn = Instance.new("TextButton")
+PasteBtn.Size = UDim2.new(0.4,0,0,35)
+PasteBtn.Position = UDim2.new(0.05,0,0,230)
+PasteBtn.Text = "Paste Clipboard"
+PasteBtn.TextColor3 = Color3.new(1,1,1)
+PasteBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+PasteBtn.BackgroundTransparency = 0.3
+PasteBtn.Parent = ExecutePage
+
+Instance.new("UICorner",PasteBtn)
+
+PasteBtn.MouseButton1Click:Connect(function()
+
+if getclipboard then
+ScriptBox.Text = getclipboard()
+end
+
+end)
+
+-- EXECUTE URL BUTTON
+
+local URLBtn = Instance.new("TextButton")
+URLBtn.Size = UDim2.new(0.4,0,0,35)
+URLBtn.Position = UDim2.new(0.55,0,0,230)
+URLBtn.Text = "Execute URL"
+URLBtn.TextColor3 = Color3.new(1,1,1)
+URLBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+URLBtn.BackgroundTransparency = 0.3
+URLBtn.Parent = ExecutePage
+
+Instance.new("UICorner",URLBtn)
+
+URLBtn.MouseButton1Click:Connect(function()
+
+local url = ScriptBox.Text
+
+if url ~= "" then
+
+pcall(function()
+
+loadstring(game:HttpGet(url))()
+
+end)
+
+end
+
+end)
+-- DHAO HUB ULTRA PART 6
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- PLAYER SCROLL
+
+local PlayerScroll = Instance.new("ScrollingFrame")
+PlayerScroll.Size = UDim2.new(1,-10,1,-10)
+PlayerScroll.Position = UDim2.new(0,5,0,5)
+PlayerScroll.BackgroundTransparency = 1
+PlayerScroll.ScrollBarThickness = 8
+PlayerScroll.ScrollBarImageColor3 = Color3.fromRGB(255,0,0)
+PlayerScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+PlayerScroll.Parent = PlayerPage
+
+local Layout = Instance.new("UIListLayout")
+Layout.Parent = PlayerScroll
+Layout.Padding = UDim.new(0,6)
+
+-- ADD TOOL
+
+local function AddTool(name,func)
+
+local Btn = Instance.new("TextButton")
+Btn.Size = UDim2.new(1,-5,0,40)
+Btn.Text = name
+Btn.TextColor3 = Color3.new(1,1,1)
+Btn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+Btn.BackgroundTransparency = 0.3
+Btn.Parent = PlayerScroll
+
+Instance.new("UICorner",Btn)
+
+Btn.MouseButton1Click:Connect(func)
+
+end
+
+-- SPEED
+
+AddTool("Speed 50",function()
+
+local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+
+if hum then
+hum.WalkSpeed = 50
+end
+
+end)
+
+-- SPEED 100
+
+AddTool("Speed 100",function()
+
+local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+
+if hum then
+hum.WalkSpeed = 100
+end
+
+end)
+
+-- JUMP
+
+AddTool("Jump 100",function()
+
+local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+
+if hum then
+hum.JumpPower = 100
+end
+
+end)
+
+-- RESET SPEED
+
+AddTool("Reset Speed",function()
+
+local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+
+if hum then
+hum.WalkSpeed = 16
+end
+
+end)
+
+-- RESET JUMP
+
+AddTool("Reset Jump",function()
+
+local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+
+if hum then
+hum.JumpPower = 50
+end
+
+end)
+
+-- NOCLIP
+
+local noclip = false
+
+AddTool("Toggle Noclip",function()
+
+noclip = not noclip
+
+game:GetService("RunService").Stepped:Connect(function()
+
+if noclip and LocalPlayer.Character then
+
+for _,v in pairs(LocalPlayer.Character:GetDescendants()) do
+
+if v:IsA("BasePart") then
+v.CanCollide = false
+end
+
+end
+
+end
+
+end)
+
+end)
+
+-- FLY
+
+AddTool("Fly",function()
+
+loadstring(game:HttpGet(
+"https://pastebin.com/raw/7tR8iA9v"
+))()
+
+end)
+
+-- TELEPORT TOOL
+
+AddTool("Click Teleport",function()
+
+local mouse = LocalPlayer:GetMouse()
+
+mouse.Button1Down:Connect(function()
+
+if mouse.Target then
+
+LocalPlayer.Character:MoveTo(mouse.Hit.p)
+
+end
+
+end)
+
+end)
+
+-- GOD MODE
+
+AddTool("God Mode",function()
+
+local char = LocalPlayer.Character
+
+if char then
+
+local hum = char:FindFirstChildOfClass("Humanoid")
+
+if hum then
+
+hum.Name = "1"
+
+local newHum = hum:Clone()
+newHum.Parent = char
+newHum.Name = "Humanoid"
+
+task.wait()
+
+hum:Destroy()
+
+end
+
+end
+
+end)
+
+-- SIT
+
+AddTool("Sit",function()
+
+local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+
+if hum then
+hum.Sit = true
+end
+
+end)
+
+-- RESET CHARACTER
+
+AddTool("Reset Character",function()
+
+LocalPlayer.Character:BreakJoints()
+
+end)
+-- DHAO HUB ULTRA PART 7
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- ESP PAGE UI
+
+local ESPFrame = Instance.new("Frame")
+ESPFrame.Size = UDim2.new(1,-10,1,-10)
+ESPFrame.Position = UDim2.new(0,5,0,5)
+ESPFrame.BackgroundTransparency = 1
+ESPFrame.Parent = SettingPage
+
+local Layout = Instance.new("UIListLayout")
+Layout.Parent = ESPFrame
+Layout.Padding = UDim.new(0,6)
+
+-- ADD BUTTON
+
+local function AddESP(name,func)
+
+local Btn = Instance.new("TextButton")
+Btn.Size = UDim2.new(1,-5,0,40)
+Btn.Text = name
+Btn.TextColor3 = Color3.new(1,1,1)
+Btn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+Btn.BackgroundTransparency = 0.3
+Btn.Parent = ESPFrame
+
+Instance.new("UICorner",Btn)
+
+Btn.MouseButton1Click:Connect(func)
+
+end
+
+-- PLAYER ESP
+
+local espEnabled = false
+
+AddESP("Toggle Player ESP",function()
+
+espEnabled = not espEnabled
+
+if espEnabled then
+
+for _,plr in pairs(Players:GetPlayers()) do
+
+if plr ~= LocalPlayer and plr.Character then
+
+local highlight = Instance.new("Highlight")
+highlight.FillColor = Color3.fromRGB(255,0,0)
+highlight.OutlineColor = Color3.fromRGB(255,255,255)
+highlight.Parent = plr.Character
+
+end
+
+end
+
+end
+
+end)
+
+-- NAME ESP
+
+AddESP("Name ESP",function()
+
+for _,plr in pairs(Players:GetPlayers()) do
+
+if plr ~= LocalPlayer and plr.Character then
+
+local billboard = Instance.new("BillboardGui")
+billboard.Size = UDim2.new(0,200,0,50)
+billboard.Adornee = plr.Character:FindFirstChild("Head")
+billboard.AlwaysOnTop = true
+billboard.Parent = plr.Character
+
+local text = Instance.new("TextLabel")
+text.Size = UDim2.new(1,0,1,0)
+text.BackgroundTransparency = 1
+text.Text = plr.Name
+text.TextColor3 = Color3.fromRGB(255,0,0)
+text.TextScaled = true
+text.Parent = billboard
+
+end
+
+end
+
+end)
+
+-- DISTANCE ESP
+
+AddESP("Distance ESP",function()
+
+while true do
+
+task.wait(1)
+
+for _,plr in pairs(Players:GetPlayers()) do
+
+if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+
+local dist = (LocalPlayer.Character.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).Magnitude
+
+local head = plr.Character:FindFirstChild("Head")
+
+if head then
+
+local tag = head:FindFirstChild("DistanceTag")
+
+if not tag then
+
+tag = Instance.new("BillboardGui")
+tag.Name = "DistanceTag"
+tag.Size = UDim2.new(0,200,0,40)
+tag.Adornee = head
+tag.AlwaysOnTop = true
+tag.Parent = head
+
+local text = Instance.new("TextLabel")
+text.Size = UDim2.new(1,0,1,0)
+text.BackgroundTransparency = 1
+text.TextColor3 = Color3.new(1,1,1)
+text.TextScaled = true
+text.Parent = tag
+
+end
+
+tag.TextLabel.Text = math.floor(dist).." studs"
+
+end
+
+end
+
+end
+
+end
+
+end)
+
+-- REMOVE ESP
+
+AddESP("Remove ESP",function()
+
+for _,v in pairs(workspace:GetDescendants()) do
+
+if v:IsA("Highlight") then
+v:Destroy()
+end
+
+if v:IsA("BillboardGui") then
+v:Destroy()
+end
+
+end
+
+end)
+-- DHAO HUB ULTRA PART 8
+
+local TweenService = game:GetService("TweenService")
+
+-- RAINBOW TITLE EFFECT
+
+task.spawn(function()
+
+local hue = 0
+
+while true do
+
+hue = hue + 0.01
+
+if hue >= 1 then
+hue = 0
+end
+
+local color = Color3.fromHSV(hue,1,1)
+
+for _,v in pairs(game.CoreGui.DHAO_HUB:GetDescendants()) do
+
+if v:IsA("TextLabel") then
+
+if v.Text == "DHAO HUB ULTRA" then
+v.TextColor3 = color
+end
+
+end
+
+end
+
+task.wait(0.05)
+
+end
+
+end)
+
+
+-- BUTTON HOVER EFFECT
+
+for _,v in pairs(game.CoreGui.DHAO_HUB:GetDescendants()) do
+
+if v:IsA("TextButton") then
+
+v.MouseEnter:Connect(function()
+
+TweenService:Create(
+v,
+TweenInfo.new(0.2),
+{BackgroundTransparency = 0.1}
+):Play()
+
+end)
+
+v.MouseLeave:Connect(function()
+
+TweenService:Create(
+v,
+TweenInfo.new(0.2),
+{BackgroundTransparency = 0.3}
+):Play()
+
+end)
+
+end
+
+end
+
+
+-- BUTTON CLICK EFFECT
+
+for _,v in pairs(game.CoreGui.DHAO_HUB:GetDescendants()) do
+
+if v:IsA("TextButton") then
+
+v.MouseButton1Down:Connect(function()
+
+v.Size = v.Size - UDim2.new(0,2,0,2)
+
+end)
+
+v.MouseButton1Up:Connect(function()
+
+v.Size = v.Size + UDim2.new(0,2,0,2)
+
+end)
+
+end
+
+end
+
+
+-- PULSE GLOW EFFECT
+
+task.spawn(function()
+
+while true do
+
+for _,v in pairs(game.CoreGui.DHAO_HUB:GetDescendants()) do
+
+if v:IsA("Frame") then
+
+local stroke = v:FindFirstChildOfClass("UIStroke")
+
+if stroke then
+
+TweenService:Create(
+stroke,
+TweenInfo.new(1),
+{Transparency = 0.6}
+):Play()
+
+task.wait(1)
+
+TweenService:Create(
+stroke,
+TweenInfo.new(1),
+{Transparency = 0}
+):Play()
+
+end
+
+end
+
+end
+
+task.wait(1)
+
+end
+
+end)
+
+
+-- MENU SHAKE EFFECT
+
+local function ShakeMenu()
+
+for i = 1,5 do
+
+Main.Position = Main.Position + UDim2.new(0,math.random(-2,2),0,math.random(-2,2))
+task.wait(0.02)
+
+end
+
+end
+
+
+-- ADD SHAKE ON OPEN
+
+task.wait(1)
+ShakeMenu()
+-- DHAO HUB ULTRA PART 9
+
+local TweenService = game:GetService("TweenService")
+
+-- NOTIFICATION GUI
+
+local NotifyGui = Instance.new("ScreenGui")
+NotifyGui.Name = "DHAO_NOTIFY"
+NotifyGui.Parent = game.CoreGui
+
+local NotifyHolder = Instance.new("Frame")
+NotifyHolder.Size = UDim2.new(0,320,1,0)
+NotifyHolder.Position = UDim2.new(1,-330,0,0)
+NotifyHolder.BackgroundTransparency = 1
+NotifyHolder.Parent = NotifyGui
+
+local Layout = Instance.new("UIListLayout")
+Layout.Parent = NotifyHolder
+Layout.Padding = UDim.new(0,6)
+Layout.SortOrder = Enum.SortOrder.LayoutOrder
+
+-- CREATE NOTIFY
+
+function DHAO_NOTIFY(text)
+
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(1,0,0,50)
+Frame.BackgroundColor3 = Color3.fromRGB(0,0,0)
+Frame.BackgroundTransparency = 0.2
+Frame.Parent = NotifyHolder
+
+Instance.new("UICorner",Frame)
+
+local Text = Instance.new("TextLabel")
+Text.Size = UDim2.new(1,-10,1,-10)
+Text.Position = UDim2.new(0,5,0,5)
+Text.BackgroundTransparency = 1
+Text.TextColor3 = Color3.fromRGB(255,0,0)
+Text.Font = Enum.Font.Code
+Text.TextScaled = true
+Text.Text = text
+Text.Parent = Frame
+
+Frame.Position = UDim2.new(1,0,0,0)
+
+TweenService:Create(
+Frame,
+TweenInfo.new(0.4,Enum.EasingStyle.Quad),
+{Position = UDim2.new(0,0,0,0)}
+):Play()
+
+task.wait(3)
+
+TweenService:Create(
+Frame,
+TweenInfo.new(0.4),
+{Position = UDim2.new(1,0,0,0)}
+):Play()
+
+task.wait(0.5)
+
+Frame:Destroy()
+
+end
+
+
+-- START NOTIFICATIONS
+
+task.wait(1)
+
+DHAO_NOTIFY("Loading DHAO HUB...")
+
+task.wait(1)
+
+DHAO_NOTIFY("Loading Scripts...")
+
+task.wait(1)
+
+DHAO_NOTIFY("Loading Systems...")
+
+task.wait(1)
+
+DHAO_NOTIFY("Menu Loaded Successfully")
+
+-- BUTTON NOTIFY HOOK
+
+for _,v in pairs(game.CoreGui.DHAO_HUB:GetDescendants()) do
+
+if v:IsA("TextButton") then
+
+v.MouseButton1Click:Connect(function()
+
+DHAO_NOTIFY(v.Text.." Activated")
+
+end)
+
+end
+
+end
+-- DHAO HUB ULTRA PART 10
+
+local UIS = game:GetService("UserInputService")
+
+-- TOGGLE GUI
+
+local ToggleGui = Instance.new("ScreenGui")
+ToggleGui.Name = "DHAO_TOGGLE"
+ToggleGui.Parent = game.CoreGui
+
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Size = UDim2.new(0,50,0,50)
+ToggleButton.Position = UDim2.new(0,20,0.6,0)
+ToggleButton.Text = "D"
+ToggleButton.TextScaled = true
+ToggleButton.Font = Enum.Font.SciFi
+ToggleButton.TextColor3 = Color3.new(1,1,1)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(255,0,0)
+ToggleButton.Parent = ToggleGui
+
+Instance.new("UICorner",ToggleButton)
+
+-- MENU REFERENCE
+
+local Menu = game.CoreGui:WaitForChild("DHAO_HUB")
+
+-- TOGGLE FUNCTION
+
+ToggleButton.MouseButton1Click:Connect(function()
+
+Menu.Enabled = not Menu.Enabled
+
+end)
+
+-- DRAG SYSTEM
+
+local dragging = false
+local dragInput
+local dragStart
+local startPos
+
+ToggleButton.InputBegan:Connect(function(input)
+
+if input.UserInputType == Enum.UserInputType.MouseButton1 then
+
+dragging = true
+dragStart = input.Position
+startPos = ToggleButton.Position
+
+end
+
+end)
+
+ToggleButton.InputEnded:Connect(function(input)
+
+if input.UserInputType == Enum.UserInputType.MouseButton1 then
+dragging = false
+end
+
+end)
+
+UIS.InputChanged:Connect(function(input)
+
+if dragging then
+
+local delta = input.Position - dragStart
+
+ToggleButton.Position = UDim2.new(
+startPos.X.Scale,
+startPos.X.Offset + delta.X,
+startPos.Y.Scale,
+startPos.Y.Offset + delta.Y
+)
+
+end
+
+end)
+
+-- HOLD HIDE BUTTON
+
+ToggleButton.MouseButton2Click:Connect(function()
+
+ToggleButton.Visible = false
+
+end)
+
+-- RESET TOGGLE (KEY)
+
+UIS.InputBegan:Connect(function(input)
+
+if input.KeyCode == Enum.KeyCode.RightShift then
+
+ToggleButton.Visible = true
+
+end
+
+end)
+-- DHAO HUB ULTRA PART 11
+
+local TweenService = game:GetService("TweenService")
+
+-- LOADING GUI
+
+local LoadGui = Instance.new("ScreenGui")
+LoadGui.Name = "DHAO_LOADING"
+LoadGui.Parent = game.CoreGui
+
+local LoadFrame = Instance.new("Frame")
+LoadFrame.Size = UDim2.new(1,0,1,0)
+LoadFrame.BackgroundColor3 = Color3.fromRGB(0,0,0)
+LoadFrame.Parent = LoadGui
+
+-- TITLE
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(0,400,0,80)
+Title.Position = UDim2.new(0.5,-200,0.35,0)
+Title.BackgroundTransparency = 1
+Title.Text = "DHAO HUB ULTRA"
+Title.TextColor3 = Color3.fromRGB(255,0,0)
+Title.TextScaled = true
+Title.Font = Enum.Font.SciFi
+Title.Parent = LoadFrame
+
+-- STATUS TEXT
+
+local Status = Instance.new("TextLabel")
+Status.Size = UDim2.new(0,400,0,40)
+Status.Position = UDim2.new(0.5,-200,0.5,0)
+Status.BackgroundTransparency = 1
+Status.Text = "Starting..."
+Status.TextColor3 = Color3.new(1,1,1)
+Status.TextScaled = true
+Status.Font = Enum.Font.Code
+Status.Parent = LoadFrame
+
+-- BAR BACK
+
+local BarBack = Instance.new("Frame")
+BarBack.Size = UDim2.new(0,400,0,20)
+BarBack.Position = UDim2.new(0.5,-200,0.6,0)
+BarBack.BackgroundColor3 = Color3.fromRGB(50,50,50)
+BarBack.Parent = LoadFrame
+
+Instance.new("UICorner",BarBack)
+
+-- BAR
+
+local Bar = Instance.new("Frame")
+Bar.Size = UDim2.new(0,0,1,0)
+Bar.BackgroundColor3 = Color3.fromRGB(255,0,0)
+Bar.Parent = BarBack
+
+Instance.new("UICorner",Bar)
+
+-- LOADING STEPS
+
+local function Step(text,percent)
+
+Status.Text = text
+
+TweenService:Create(
+Bar,
+TweenInfo.new(0.6),
+{Size = UDim2.new(percent/100,0,1,0)}
+):Play()
+
+task.wait(0.8)
+
+end
+
+-- LOADING SEQUENCE
+
+Step("Loading Core...",10)
+Step("Loading UI...",25)
+Step("Loading Scripts...",40)
+Step("Loading Player Tools...",55)
+Step("Loading ESP...",70)
+Step("Loading Systems...",85)
+Step("Finishing...",100)
+
+task.wait(1)
+
+-- FADE OUT
+
+TweenService:Create(
+LoadFrame,
+TweenInfo.new(1),
+{BackgroundTransparency = 1}
+):Play()
+
+for _,v in pairs(LoadFrame:GetDescendants()) do
+
+if v:IsA("TextLabel") then
+TweenService:Create(v,TweenInfo.new(1),{TextTransparency=1}):Play()
+end
+
+if v:IsA("Frame") then
+TweenService:Create(v,TweenInfo.new(1),{BackgroundTransparency=1}):Play()
+end
+
+end
+
+task.wait(1)
+
+LoadGui:Destroy()
+-- DHAO HUB ULTRA PART 12
+
+local TweenService = game:GetService("TweenService")
+
+-- NEWS BAR
+
+local NewsBar = Instance.new("Frame")
+NewsBar.Size = UDim2.new(1,0,0,25)
+NewsBar.Position = UDim2.new(0,0,1,-25)
+NewsBar.BackgroundColor3 = Color3.fromRGB(0,0,0)
+NewsBar.BackgroundTransparency = 0.3
+NewsBar.Parent = Main
+
+Instance.new("UICorner",NewsBar)
+
+-- NEWS TEXT
+
+local NewsText = Instance.new("TextLabel")
+NewsText.Size = UDim2.new(0,1000,1,0)
+NewsText.Position = UDim2.new(1,0,0,0)
+NewsText.BackgroundTransparency = 1
+NewsText.TextColor3 = Color3.fromRGB(255,0,0)
+NewsText.TextScaled = true
+NewsText.Font = Enum.Font.Code
+NewsText.Text = "DHAO HUB ULTRA | FREE SCRIPT HUB | UPDATE EVERY WEEK | DISCORD COMING SOON | VERSION 2.0"
+NewsText.Parent = NewsBar
+
+-- SCROLL FUNCTION
+
+task.spawn(function()
+
+while true do
+
+NewsText.Position = UDim2.new(1,0,0,0)
+
+for i = 1,350 do
+
+NewsText.Position = NewsText.Position - UDim2.new(0.01,0,0,0)
+
+task.wait(0.03)
+
+end
+
+end
+
+end)
+
+-- VERSION LABEL
+
+local VersionLabel = Instance.new("TextLabel")
+VersionLabel.Size = UDim2.new(0,120,0,25)
+VersionLabel.Position = UDim2.new(0,10,1,-25)
+VersionLabel.BackgroundTransparency = 1
+VersionLabel.TextColor3 = Color3.new(1,1,1)
+VersionLabel.TextTransparency = 0.3
+VersionLabel.Font = Enum.Font.Code
+VersionLabel.TextScaled = true
+VersionLabel.Text = "Version 2.0"
+VersionLabel.Parent = Main
+
+-- UPDATE MESSAGE
+
+task.delay(5,function()
+
+if DHAO_NOTIFY then
+DHAO_NOTIFY("DHAO HUB ULTRA V2 LOADED")
+end
+
+end)
+-- DHAO HUB ULTRA PART 13
+
+local TweenService = game:GetService("TweenService")
+local Lighting = game:GetService("Lighting")
+
+-- BACKGROUND BLUR
+
+local Blur = Instance.new("BlurEffect")
+Blur.Size = 0
+Blur.Parent = Lighting
+
+task.wait(1)
+
+TweenService:Create(
+Blur,
+TweenInfo.new(0.6),
+{Size = 12}
+):Play()
+
+-- TAB HIGHLIGHT
+
+local Tabs = {
+HomeBtn,
+ScriptBtn,
+FixLagBtn,
+ExecuteBtn
+}
+
+for _,btn in pairs(Tabs) do
+
+btn.MouseButton1Click:Connect(function()
+
+for _,b in pairs(Tabs) do
+
+TweenService:Create(
+b,
+TweenInfo.new(0.2),
+{BackgroundColor3 = Color3.fromRGB(20,20,20)}
+):Play()
+
+end
+
+TweenService:Create(
+btn,
+TweenInfo.new(0.2),
+{BackgroundColor3 = Color3.fromRGB(255,0,0)}
+):Play()
+
+end)
+
+end
+
+-- TITLE GLOW
+
+local Glow = Instance.new("UIStroke")
+Glow.Thickness = 2
+Glow.Color = Color3.fromRGB(255,0,0)
+Glow.Parent = Title
+
+task.spawn(function()
+
+while true do
+
+TweenService:Create(
+Glow,
+TweenInfo.new(1),
+{Transparency = 0.5}
+):Play()
+
+task.wait(1)
+
+TweenService:Create(
+Glow,
+TweenInfo.new(1),
+{Transparency = 0}
+):Play()
+
+task.wait(1)
+
+end
+
+end)
+
+-- MENU OPEN ANIMATION
+
+Main.Size = UDim2.new(0,0,0,0)
+
+TweenService:Create(
+Main,
+TweenInfo.new(0.5,Enum.EasingStyle.Back),
+{Size = UDim2.new(0,600,0,420)}
+):Play()
+
+-- BORDER EFFECT
+
+local Stroke = Instance.new("UIStroke")
+Stroke.Thickness = 1
+Stroke.Color = Color3.fromRGB(255,0,0)
+Stroke.Parent = Main
+
+task.spawn(function()
+
+while true do
+
+TweenService:Create(
+Stroke,
+TweenInfo.new(2),
+{Transparency = 0.7}
+):Play()
+
+task.wait(2)
+
+TweenService:Create(
+Stroke,
+TweenInfo.new(2),
+{Transparency = 0}
+):Play()
+
+task.wait(2)
+
+end
+
+end)
+
+-- TAB HOVER EFFECT
+
+for _,btn in pairs(Tabs) do
+
+btn.MouseEnter:Connect(function()
+
+TweenService:Create(
+btn,
+TweenInfo.new(0.15),
+{TextColor3 = Color3.fromRGB(255,80,80)}
+):Play()
+
+end)
+
+btn.MouseLeave:Connect(function()
+
+TweenService:Create(
+btn,
+TweenInfo.new(0.15),
+{TextColor3 = Color3.new(1,1,1)}
+):Play()
+
+end)
+
+end
+-- DHAO HUB ULTRA PART 14 FINAL
+
+local HttpService = game:GetService("HttpService")
+local RunService = game:GetService("RunService")
+
+--------------------------------------------------
+-- ANTI DUPLICATE HUB
+--------------------------------------------------
+
+if game.CoreGui:FindFirstChild("DHAO_HUB_LOADED") then
+warn("DHAO HUB already running")
+return
+end
+
+local Flag = Instance.new("BoolValue")
+Flag.Name = "DHAO_HUB_LOADED"
+Flag.Parent = game.CoreGui
+
+
+--------------------------------------------------
+-- AUTO UPDATE CHECK
+--------------------------------------------------
+
+local Version = "2.0"
+
+task.spawn(function()
+
+pcall(function()
+
+local data = game:HttpGet("https://raw.githubusercontent.com/duchao28052025-collab/DHAO-V1/main/version")
+
+if data then
+
+if data ~= Version then
+
+if DHAO_NOTIFY then
+DHAO_NOTIFY("New Update Available")
+end
+
+else
+
+if DHAO_NOTIFY then
+DHAO_NOTIFY("Latest Version Loaded")
+end
+
+end
+
+end
+
+end)
+
+end)
+
+
+--------------------------------------------------
+-- PERFORMANCE OPTIMIZER
+--------------------------------------------------
+
+task.spawn(function()
+
+while true do
+
+for _,v in pairs(workspace:GetDescendants()) do
+
+if v:IsA("ParticleEmitter") then
+v.Rate = v.Rate * 0.5
+end
+
+if v:IsA("Trail") then
+v.Enabled = false
+end
+
+end
+
+task.wait(10)
+
+end
+
+end)
+
+
+--------------------------------------------------
+-- AUTO CLEAN MEMORY
+--------------------------------------------------
+
+task.spawn(function()
+
+while true do
+
+collectgarbage("collect")
+
+task.wait(30)
+
+end
+
+end)
+
+
+--------------------------------------------------
+-- PROTECTION SYSTEM
+--------------------------------------------------
+
+task.spawn(function()
+
+while true do
+
+pcall(function()
+
+for _,v in pairs(game.CoreGui:GetChildren()) do
+
+if v.Name:lower():find("dex") then
+v:Destroy()
+end
+
+end
+
+end)
+
+task.wait(5)
+
+end
+
+end)
+
+
+--------------------------------------------------
+-- FINAL START MESSAGE
+--------------------------------------------------
+
+task.wait(2)
+
+if DHAO_NOTIFY then
+
+DHAO_NOTIFY("DHAO HUB ULTRA READY")
+
+end
+
+
+--------------------------------------------------
+-- HUB KEEP ALIVE
+--------------------------------------------------
+
+RunService.RenderStepped:Connect(function()
+
+if not game.CoreGui:FindFirstChild("DHAO_HUB") then
+warn("Hub removed")
+end
+
+end)
