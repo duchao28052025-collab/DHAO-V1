@@ -517,19 +517,19 @@ end)
 
 -- SCRIPTS
 
-AddScript("Infinite Yield",function()
+AddScript("Floater🤞",function()
 
 loadstring(game:HttpGet(
-"https://raw.githubusercontent.com/MerebennieOfficial/ExoticJn/refs/heads/main/Kibav4"
+"https://raw.githubusercontent.com/ngoclinh02042011-stack/Gojo-Tech/refs/heads/main/DuydepzaiGojoTech.lua"
 ))()
 
 end)
 
 
-AddScript("Dark Dex",function()
+AddScript("Lethal kiba by MinhNhat",function()
 
 loadstring(game:HttpGet(
-"https://raw.githubusercontent.com/peyton2465/Dex/master/out.lua"
+    "https://raw.githubusercontent.com/MinhNhatHUB/MinhNhat/refs/heads/main/Lethal%20Kiba.lua"
 ))()
 
 end)
